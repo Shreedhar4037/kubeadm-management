@@ -1,0 +1,58 @@
+- hosts: all
+  vars_files:
+    - vars/all.yml
+  tasks:
+    - name: import role
+      import_role: 
+        name: ../shared-roles/cluster-setup
+      become: true
+      register: status
+    - name: introducing pause for the cluster to be ready
+      pause:
+        seconds: 60
+      tags: setup
+      become: true
+
+- name: Approve Pending CSR and label addition to the nodes 
+  hosts: control 
+  gather_facts: yes 
+  vars_files: 
+    - vars/main.yaml
+  tasks: 
+    - block: 
+        - name: Get CSR certs to be approved
+          shell: kubectl get csr --no-headers | grep -iv Approved | awk '{ print$1 }'
+          register: certs 
+          become: true
+          delegate_facts: true
+
+        - debug: var=certs
+
+        - name: Approve CSR certs 
+          shell: kubectl certificate approve {{ item }}
+          with_items: "{{ certs.stdout_lines }}"
+          become: true
+          delegate_facts: true
+
+        
+        - name: Fetch node details without k8s labels
+          shell:
+            kubectl get nodes --no-headers -o custom-columns=Name:.metadata.name | while read node; do 
+              if ! kubectl get node "$node" --show-labels | grep -q "kubernetes-host=" ; then
+                echo "$node"
+              fi 
+            done 
+          register: unlabelled_nodes
+          become: true
+          delegate_facts: true
+
+        - debug: var=unlabelled_nodes
+
+        - name: Add the kubernetes-host label to unlabelled_nodes
+          shell: kubectl label nodes {{ item }} kubernetes-host= 
+          with_items: "{{ unlabelled_nodes.stdout_lines }}"
+          become: true 
+          delegate_facts: true
+
+
+

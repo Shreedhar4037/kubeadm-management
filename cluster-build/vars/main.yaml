@@ -1,0 +1,79 @@
+####Kubernetes Packages Updates########
+kube_activation_key: "onprem_k8s_may_24_pcosu1"
+org_name: "Neustar"
+rhsm_activation_key: "onprem_redhat_8_sep_24_u2"     ###nsr_redhat_8_jul_24_u1
+
+### kube intializing ### 
+
+primary_control_node: ""
+control_nodeport: 443
+initout: ''
+controlplane_token: ''
+worker_token: ''
+kubernetes_version: 1.30.4
+containerd_version: 1.6.32
+network_cidr: "10.210.0.0/16"
+service_cidr: "10.214.0.0/16"
+crictl_version: 1.30.1
+
+machine_reboot_time: 240
+machine_pause_time: 30
+containerd_conf_file_dir: /etc/containerd
+contanierd_conf_file: config.toml.j2
+contanierd_conf_dest: /etc/containerd/config.toml
+kubernetes_repo_file: kubernetes.repo.j2
+kubernetes_conf_dest: /etc/yum.repos.d/kubernetes.repo
+docker_repo_file: docker-ce.repo.j2
+docker_conf_dest: /etc/yum.repos.d/docker-ce.repo
+kubeconfig_dir: $HOME/.kube
+kubeconfig_admin_file: /etc/kubernetes/admin.conf
+permissions_for_kubeconfig: $(id -u):$(id -g)
+kubelet_config: /var/lib/kubelet/config.yaml
+
+image_repository: "harbor.onedev.neustar.biz/onedev-common"
+inotify: "20999999999"
+
+### calico manifest ###
+calico_ipv4pool_cidr: "10.210.0.0/23"
+cidr_manifest_src: ./manifests/calico.yaml.j2
+cidr_manifest_dest: ./calico.yaml
+pod_network_manifest: calico.yaml
+calico_cni: "harbor.onedev.neustar.biz/onedev-common/calico-cni:v3.28.1"
+#calico_pod2daemon: "harbor.onedev.neustar.biz/onedev-common/calico-pod2daemon-flexvol:v3.26.4"
+calico_node: "harbor.onedev.neustar.biz/onedev-common/calico-node:v3.28.1"
+calico_kube_controller: "harbor.onedev.neustar.biz/onedev-common/calico-kube-controllers:v3.28.1"
+# calico_api: harbor.onedev.neustar.biz/onedev-common/calico/apiserver:v3.26.0
+# api_manifest_src: ./manifests/calico-api-server.yaml.j2
+# api_manifest_dest: ./calico-api-server.yaml
+# api_network_manifest: calico-api-server.yaml
+
+
+####New Variables######
+containerLogMaxSize: 25Mi
+containerLogMaxFiles: 3
+tu_cert_conf_file: jfrog-ca-cert.pem
+tu_cert_conf_dest: /etc/pki/ca-trust/source/anchors/jfrog-ca-cert.pem
+
+# git_cert_conf_file: git-ca-cert.pem
+# git_cert_conf_dest: /etc/pki/ca-trust/source/anchors/git-ca-cert.pem
+
+
+####Flux Variable######
+environments:
+  - dev
+  - stg
+  - prd
+selected_environment: prd
+flux_versions:
+  - v2.1.2
+  - v2.2.1
+  - v2.3.0
+flux_baseline_repo: git.nexgen.neustar.biz/onedev/iac/cmf/flux-odke-system/dc15-prd-c8-odke-fluxbaseline.git
+flux_baseline_branch: feature/c8
+selected_flux_version: v2.2.1
+username: ''
+password: ''
+flux_base: ./dc15-prd-c8-odke-fluxbaseline
+flux_path: dc15-prd-c8-odke-fluxbaseline
+env_stage: prd
+flux_version: v2.2.1

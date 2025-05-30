@@ -1,0 +1,16 @@
+- name: Add new worker nodes
+  hosts: all
+  vars: 
+    node_details: "{{ ansible_facts['nodename'].split('-') }}"
+    token: "{{ node_details[0] }}_{{ node_details[2] }}_{{ node_details[3][-2:] }}_join_token"
+    host: "{{ node_details[0] }}_{{ node_details[2] }}_{{ node_details[3][-2:] }}_host"
+  vars_files: 
+    - vars/main.yaml
+  tasks:
+    - name: Run tasks for wrkrc4 node 
+      include_tasks: wrkrc4.yaml
+      vars: 
+        join_token: "{{ lookup('vars', token) }}"
+        primary: "{{ lookup('vars', host) }}"
+      when: "'wrkrc4' in ansible_facts['nodename']"
+

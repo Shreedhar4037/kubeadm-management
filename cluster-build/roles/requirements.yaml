@@ -1,0 +1,6 @@
+---
+  roles:
+  - name: k8s_worker_node_1.31
+    src: ssh:git@git.domain.com:8022/path/k8s_worker_node.git
+    scm: git
+    version: "feature/k8s-worker-1.30"

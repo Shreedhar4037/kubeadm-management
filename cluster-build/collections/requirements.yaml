@@ -1,0 +1,8 @@
+--
+collections:
+  - community.kubernetes
+  - kubernetes.core
+  - ansible.posix
+  - cloud.common 
+  - community.general
+  - community.crypto

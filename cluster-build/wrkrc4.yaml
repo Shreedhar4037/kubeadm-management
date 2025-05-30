@@ -1,0 +1,14 @@
+- block: 
+    - name: import role
+      import_role: 
+        name: k8s_worker_node_1.31
+      vars: 
+        join_token: "{{ join_token }}"
+        primary: "{{ primary }}"
+      async: 45 
+      poll: 0
+  rescue: 
+    - name: print message 
+      debug: 
+        msg: "unable to execute playbooks"
+
